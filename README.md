@@ -100,8 +100,6 @@ npm run format
 
 ## 📂 Estrutura do Projeto
 
-## 📂 Estrutura do Projeto
-
 ```text
 .
 ├── data/               # "Banco de dados" (Arquivos JSON)
