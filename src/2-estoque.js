@@ -13,15 +13,16 @@ class GerenciadorEstoque {
     try {
       const rawData = fs.readFileSync(dataPath, 'utf-8');
       const dados = JSON.parse(rawData);
-      
+
       if (!dados.estoque || !Array.isArray(dados.estoque)) {
-        throw new Error("JSON inválido: propriedade 'estoque' deve ser um array.");
+        throw new Error(
+          "JSON inválido: propriedade 'estoque' deve ser um array."
+        );
       }
 
       for (const item of dados.estoque) {
         this.produtos.set(item.codigoProduto, { ...item });
       }
-
     } catch (error) {
       console.error('Erro fatal:', error.message);
       process.exit(1);
@@ -43,11 +44,11 @@ class GerenciadorEstoque {
     const produto = this.produtos.get(id);
 
     if (!produto) return { erro: `Produto ID ${id} não encontrado.` };
-    
+
     const novoSaldo = produto.estoque + quantidade;
     if (quantidade < 0 && novoSaldo < 0) {
-      return { 
-        erro: `Saldo insuficiente para '${produto.descricaoProduto}'. Atual: ${produto.estoque}, Tentativa: ${quantidade}` 
+      return {
+        erro: `Saldo insuficiente para '${produto.descricaoProduto}'. Atual: ${produto.estoque}, Tentativa: ${quantidade}`,
       };
     }
 
@@ -61,11 +62,10 @@ class GerenciadorEstoque {
       codigoProduto: id,
       produto: produto.descricaoProduto,
       qtdeMovimentada: quantidade,
-      saldoFinal: novoSaldo
+      saldoFinal: novoSaldo,
     };
   }
 }
-
 
 function exibirReciboFormatado(dados) {
   const wId = 12;
@@ -74,9 +74,12 @@ function exibirReciboFormatado(dados) {
   const wMov = 12;
   const wSaldo = 10;
 
-  const idCurto = dados.idTransacao.split('-')[0]; 
-  const tipoTransacao = dados.qtdeMovimentada > 0 ? "ENTRADA" : "SAÍDA";
-  const movimentoStr = dados.qtdeMovimentada > 0 ? `+${dados.qtdeMovimentada}` : `${dados.qtdeMovimentada}`;
+  const idCurto = dados.idTransacao.split('-')[0];
+  const tipoTransacao = dados.qtdeMovimentada > 0 ? 'ENTRADA' : 'SAÍDA';
+  const movimentoStr =
+    dados.qtdeMovimentada > 0
+      ? `+${dados.qtdeMovimentada}`
+      : `${dados.qtdeMovimentada}`;
   const linha = '='.repeat(wId + wTipo + wProd + wMov + wSaldo + 13);
 
   console.log(linha);
@@ -88,10 +91,9 @@ function exibirReciboFormatado(dados) {
   console.log(
     `| ${idCurto.padEnd(wId)} | ${tipoTransacao.padEnd(wTipo)} | ${dados.produto.padEnd(wProd)} | ${movimentoStr.padStart(wMov)} | ${dados.saldoFinal.toString().padStart(wSaldo)} |`
   );
-  
+
   console.log(linha);
 }
-
 
 const estoque = new GerenciadorEstoque();
 
@@ -99,7 +101,7 @@ console.log('\n--- Controle de Estoque ---\n');
 
 function processar(id, qtde, desc) {
   const resultado = estoque.movimentar(id, qtde, desc);
-  
+
   if (resultado.erro) {
     console.log(`❌ ERRO: ${resultado.erro}\n`);
   } else {
